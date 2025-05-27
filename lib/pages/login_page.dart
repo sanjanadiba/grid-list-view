@@ -14,10 +14,29 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isLoginFailed = false;
 
+  // ✅ Email Validation with Regex
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  // ✅ Password Validation (min 6 characters)
+  bool isValidPassword(String password) {
+    return password.length >= 6;
+  }
+
   void _login() {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
+    if (!isValidEmail(email) || !isValidPassword(password)) {
+      setState(() {
+        _isLoginFailed = true;
+      });
+      return;
+    }
+
+    // Dummy login
     if (email == 'user@example.com' && password == 'password') {
       Navigator.pushReplacement(
         context,
@@ -40,10 +59,14 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (_isLoginFailed)
-              const Text("Invalid credentials!", style: TextStyle(color: Colors.red)),
+              const Text(
+                "Invalid email, password or credentials!",
+                style: TextStyle(color: Color.fromARGB(255, 29, 11, 10)),
+              ),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 12),
             TextField(
